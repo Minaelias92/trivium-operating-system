@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trivium Operating System â Value Engines</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#0f172a;color:#e2e8f0;min-height:100vh}
+a{color:#60a5fa;text-decoration:none}a:hover{text-decoration:underline;color:#93c5fd}
+
+.header{background:linear-gradient(135deg,#1e293b,#0f172a);padding:28px 40px;border-bottom:2px solid #334155}
+.header h1{font-size:26px;color:#f8fafc;margin-bottom:4px}
+.header p{color:#94a3b8;font-size:13px}
+.badge{display:inline-block;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;margin-left:8px}
+
+.tabs{display:flex;gap:4px;padding:14px 40px 0;background:#0f172a;flex-wrap:wrap}
+.tab{padding:9px 18px;border-radius:8px 8px 0 0;cursor:pointer;font-size:13px;font-weight:600;border:1px solid transparent;border-bottom:none;color:#94a3b8;transition:.2s}
+.tab:hover{background:#1e293b;color:#e2e8f0}.tab.active{background:#1e293b;color:#60a5fa;border-color:#334155}
+
+.content{padding:28px 40px}
+.panel{display:none}.panel.active{display:block}
+
+/* FLOW */
+.engine-title{font-size:22px;font-weight:700;margin-bottom:6px}
+.engine-sub{color:#94a3b8;font-size:13px;margin-bottom:20px}
+
+.flow{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding-bottom:16px}
+.flow-col{display:flex;flex-direction:column;align-items:center;min-width:170px;gap:8px}
+.flow-arrow{display:flex;align-items:center;color:#475569;font-size:24px;padding:0 4px;margin-top:20px}
+.flow-split{display:flex;flex-direction:column;gap:8px;align-items:center}
+
+.stage{background:#1e293b;border:1px solid #334155;border-radius:10px;padding:14px;width:170px;text-align:center;transition:.2s;cursor:pointer;position:relative}
+.stage:hover{border-color:#60a5fa;transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.3)}
+.stage .name{font-size:13px;font-weight:600;color:#f8fafc;margin-bottom:4px}
+.stage .dept{font-size:11px;color:#94a3b8}
+.stage .drive-link{font-size:11px;margin-top:6px;display:block}
+.stage.power{border-color:#e03131;border-width:2px}
+.stage.power::before{content:"â¡";position:absolute;top:-8px;right:-8px;font-size:16px}
+
+.stage.trigger{background:#10b98120;border-color:#10b981}
+.stage.end-stage{background:#ef444420;border-color:#ef4444}
+.stage.decision{background:#f59e0b15;border-color:#f59e0b;border-radius:0;transform:rotate(0deg);clip-path:polygon(50% 0%,100% 50%,50% 100%,0% 50%);width:140px;height:120px;display:flex;align-items:center;justify-content:center;padding:20px 10px}
+.stage.decision .name{font-size:12px}
+.stage.blue{background:#1971c215;border-color:#1971c2}
+.stage.green{background:#2f9e4420;border-color:#2f9e44}
+.stage.orange{background:#e8590c15;border-color:#e8590c}
+.stage.purple{background:#7048e815;border-color:#7048e8}
+.stage.teal{background:#0c8599 15;border-color:#0c8599}
+.stage.pink{background:#c2255c15;border-color:#c2255c}
+.stage.gray{background:#86868615;border-color:#868686}
+
+/* VERTICAL FLOW for fulfillment services */
+.services-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin:16px 0}
+
+/* POWER STAGES */
+.power-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px;margin-top:16px}
+.power-card{background:#1e293b;border:2px solid #e03131;border-radius:10px;padding:16px;position:relative}
+.power-card::before{content:"â¡";position:absolute;top:10px;right:14px;font-size:20px}
+.power-card .num{font-size:11px;color:#e03131;font-weight:700;margin-bottom:4px}
+.power-card .pname{font-size:15px;font-weight:600;color:#f8fafc;margin-bottom:4px}
+.power-card .why{font-size:13px;color:#94a3b8;line-height:1.5}
+.power-card .owner{font-size:12px;color:#60a5fa;margin-top:6px}
+.power-card .sop-status{font-size:11px;margin-top:6px;padding:3px 8px;border-radius:4px;display:inline-block}
+.has-sop{background:#2f9e4430;color:#69db7c}
+.needs-sop{background:#e0313130;color:#ffa8a8}
+
+/* SUPPORT BAR */
+.support-bar{display:flex;gap:12px;flex-wrap:wrap;margin-top:20px}
+.support-box{background:#1e293b;border:1px solid #334155;border-radius:8px;padding:12px 16px;flex:1;min-width:150px}
+.support-box .sname{font-size:13px;font-weight:600;color:#f8fafc}
+.support-box .sdesc{font-size:11px;color:#94a3b8;margin-top:2px}
+
+@media(max-width:768px){.content,.header,.tabs{padding-left:16px;padding-right:16px}.flow{flex-direction:column;align-items:stretch}.flow-arrow{transform:rotate(90deg);justify-content:center}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Trivium Operating System <span class="badge" style="background:#1971c230;color:#60a5fa">Value Engines</span></h1>
+  <p>Growth Engine + Fulfillment Engine &bull; 9 Power Stages Identified &bull; Linked to Google Drive</p>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="show('growth')">Growth Engine</div>
+  <div class="tab" onclick="show('fulfillment')">Fulfillment Engine</div>
+  <div class="tab" onclick="show('power')">Power Stages</div>
+  <div class="tab" onclick="show('support')">Support Functions</div>
+</div>
+
+<div class="content">
+
+<!-- GROWTH ENGINE -->
+<div id="growth" class="panel active">
+<div class="engine-title" style="color:#1971c2">Growth Engine</div>
+<div class="engine-sub">How Trivium attracts and converts new Amazon seller clients &bull; Trigger: Prospect becomes aware &bull; End: Sale closed</div>
+
+<div class="flow">
+  <div class="flow-col">
+    <div class="stage trigger">
+      <div class="name">TRIGGER</div>
+      <div class="dept">Prospect Becomes Aware of Trivium</div>
+    </div>
+  </div>
+  <div class="flow-arrow">â</div>
+  <div class="flow-col">
+    <div class="stage blue power" onclick="window.open('https://drive.google.com/drive/folders/1OcduqQGsqTCYv7NcbhRpc5YXuRdZM0rN','_blank')">
+      <div class="name">Social Media Content</div>
+      <div class="dept">Marketing</div>
+      <a class="drive-link" href="https://drive.google.com/drive/folders/1OcduqQGsqTCYv7NcbhRpc5YXuRdZM0rN" target="_blank">Open in Drive â</a>
+    </div>
+    <div class="stage blue power" onclick="window.open('https://drive.google.com/drive/folders/1ASluMArKgqE29CuWS5PswPTSFL_21Ici','_blank')">
+      <div class="name">Paid Ads (Meta/Google)</div>
+      <div class="dept">Marketing â Ads Assets</div>
+      <a class="drive-link" href="https://drive.google.com/drive/folders/1ASluMArKgqE29CuWS5PswPTSFL_21Ici" target="_blank">Open in Drive â</a>
+    </div>
+    <div class="stage blue" onclick="window.open('https://drive.google.com/drive/folders/17LXeXyspk9EHCvxjy8xGOTyaEihmD4M7','_blank')">
+      <div class="name">Podcasts</div>
+      <div class="dept">Marketing</div>
+      <a class="drive-link" href="https://drive.google.com/drive/folders/17LXeXyspk9EHCvxjy8xGOTyaEihmD4M7" target="_blank">Open in Drive â</a>
+    </div>
+    <div class="stage blue" onclick="window.open('https://drive.google.com/drive/folders/1FehKw7CFapxKwWUXI9yiYCWAvNhQ3ULJ','_blank')">
+      <div class="name">Case Studies & Referrals</div>
+      <div class="dept">Marketing</div>
+      <a class="drive-link" href="https://drive.google.com/drive/folders/1FehKw7CFapxKwWUXI9yiYCWAvNhQ3ULJ" target="_blank">Open in Drive â</a>
+    </div>
+    <div class="stage blue" onclick="window.open('https://drive.google.com/drive/folders/1SVq-TuE5UVhmK4Ye2XnZymzEKsV3KUpu','_blank')">
+      <div class="name">Webinars</div>
+      <div class="dept">Marketing</div>
+      <a class="drive-link" href="https://drive.google.com/drive/folders/1SVq-TuE5UVhmK4Ye2XnZymzEKsV3KUpu" target="_blank">Open in Drive â</a>
+    </div>
+  </div>
+  <div class="flow-arrow">â</div>
+  <div class="flow-col">
+    <div class="stage blue power" onclick="window.open('https://drive.google.com/drive/folders/1hZs18VVeahM7qxsznC1a4FTkVWhDFJLm','_blank')">
+      <div class="name">Lead Magnets & Email Capture</div>
+      <div class="dept">Marketing â HubSpot</div>
+      <a class="drive-link" href="https://drive.google.com/drive/folders/1hZs18VVeahM7qxsznC1a4FTkVWhDFJLm" target="_blank">Open in Drive â</a>
+    </div>
+    <div class="stage blue" onclick="window.open('https://drive.google.com/drive/folders/1frL7xPm-JaQKbqM64JrYhzOVs2-rx4fw','_blank')">
+      <div class="name">HubSpot CRM</div>
+      <div class="dept">Marketing</div>
+      <a class="drive-link" href="https://drive.google.com/drive/folders/1frL7xPm-JaQKbqM64JrYhzOVs2-rx4fw" target="_blank">Open in Drive â</a>
+    </div>
+  </div>
+  <div class="flow-arrow">â</div>
+  <div class="flow-col">
+    <div class="stage blue" onclick="window.open('https://drive.google.com/drive/folders/1Toh30zEn6Xjwca8Xb3a6bScALpievnKg','_blank')">
+      <div class="name">Email Nurture Sequence</div>
+      <div class="dept">Marketing â Email</div>
+      <a class="drive-link" href="https://drive.google.com/drive/folders/1Toh30zEn6Xjwca8Xb3a6bScALpievnKg" target="_blank">Open in Drive â</a>
+    </div>
+  </div>
+  <div class="flow-arrow">â</div>
+  <div class="flow-col">
+    <div class="stage purple" onclick="window.open('https://drive.google.com/drive/folders/17qnzH4-K_cKmP9oxndEKl2IkS1my71IJ','_blank')">
+      <div class="name">VSL / Sales Toolkit</div>
+      <div class="dept">Marketing</div>
+      <a class="drive-link" href="https://drive.google.com/drive/folders/17qnzH4-K_cKmP9oxndEKl2IkS1my71IJ" target="_blank">Open in Drive â</a>
+    </div>
+    <div class="stage purple" onclick="window.open('https://drive.google.com/drive/folders/1durDl6k7XWx9wu6bbYLlETkJmsnnbsT8','_blank')">
+      <div class="name">Sales ToolKit</div>
+      <div class="dept">Marketing â Sales</div>
+      <a class="drive-link" href="https://drive.google.com/drive/folders/1durDl6k7XWx9wu6bbYLlETkJmsnnbsT8" target="_blank">Open in Drive â</a>
+    </div>
+  </div>
+  <div class="flow-arrow">â</div>
+  <div class="flow-col">
+    <div class="stage green power" onclick="window.open('https://drive.google.com/drive/folders/1-DLFnSSbmQFXbrxLeSjFLE4yVX2neDns','_blank')">
+      <div class="name">Presales Audit & Analysis</div>
+      <div class="dept">Sales Team</div>
+      <a class="drive-link" href="https://drive.google.com/drive/folders/1-DLFnSSbmQFXbrxLeSjFLE4yVX2neDns" target="_blank">Open in Drive â</a>
+    </div>
+  </div>
+  <div class="flow-arrow">â</div>
+  <div class="flow-col">
+    <div class="stage green power" onclick="window.open('https://drive.google.com/drive/folders/1XJznaNue4dwG7ZCm-ywoBObF-j1R0WAl','_blank')">
+      <div class="name">Discovery Call & Proposal</div>
+      <div class="dept">Mina / Sales</div>
+      <a class="drive-link" href="https://drive.google.com/drive/folders/1XJznaNue4dwG7ZCm-ywoBObF-j1R0WAl" target="_blank">Open in Drive â</a>
+    </div>
+    <div class="stage green" onclick="window.open('https://drive.google.com/drive/folders/1gpZs1HNuOx5KiNAkkLvMJQbvzRZCKcHH','_blank')">
+      <div class="name">Sales QA</div>
+      <div class="dept">Sales â Quality Assurance</div>
+      <a class="drive-link" href="https://drive.google.com/drive/folders/1gpZs1HNuOx5KiNAkkLvMJQbvzRZCKcHH" target="_blank">Open in Drive â</a>
+    </div>
+  </div>
+  <div class="flow-arrow">â</div>
+  <div class="flow-col">
+    <div class="stage power" style="background:#e0313120;border-color:#e03131" onclick="window.open('https://drive.google.com/drive/folders/143UzzhXcg7cdCRltUUks9KIYTdQ8bcgr','_blank')">
+      <div class="name">HANDOVER TO FULFILLMENT</div>
+      <div class="dept">Sales â Client Success</div>
+      <a class="drive-link" href="https://drive.google.com/drive/folders/143UzzhXcg7cdCRltUUks9KIYTdQ8bcgr" target="_blank" style="color:#ffa8a8">Open in Drive â</a>
+    </div>
+    <div class="stage green" onclick="window.open('https://drive.google.com/drive/folders/1LVML77TXhOQiNV6ZnsIkORjTQM1cf6Cc','_blank')">
+      <div class="name">Upsell Opportunities</div>
+      <div class="dept">Sales â Upsells</div>
+      <a class="drive-link" href="https://drive.google.com/drive/folders/1LVML77TXhOQiNV6ZnsIkORjTQM1cf6Cc" target="_blank">Open in Drive â</a>
+    </div>
+  </div>
+  <div class="flow-arrow">â</div>
+  <div class="flow-col">
+    <div class="stage end-stage">
+      <div class="name">END</div>
+      <div class="dept">Sale Complete â Fulfillment Begins</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- FULFILLMENT ENGINE -->
+<div id="fulfillment" class="panel">
+<div class="engine-title" style="color:#e8590c">Fulfillment Engine</div>
+<div class="engine-sub">How Trivium delivers upon the promised value after the sale &bull; Trigger: Sale made &bull; End: Value delivered + testimonial</div>
+
+<div class="flow">
+  <div class="flow-col">
+    <div class="stage trigger"><div class="name">TRIGGER</div><div class="dept">Sale Made (Handover from Sales)</div></div>
+  </div>
+  <div class="flow-arrow">â</div>
+  <div class="flow-col">
+    <div class="stage teal power" onclick="window.open('https://drive.google.com/drive/folders/1uWGBmdD0f4MD2436ARsnoE5C74i004WI','_blank')">
+      <div class="name">Client Onboarding</div>
+      <div class="dept">Client Success Team</div>
+      <a class="drive-link" href="https://drive.google.com/drive/folders/1uWGBmdD0f4MD2436ARsnoE5C74i004WI" target="_blank">Open in Drive â</a>
+    </div>
+  </div>
+  <div class="flow-arrow">â</div>
+  <div class="flow-col">
+    <div class="stage orange" onclick="window.open('https://drive.google.com/drive/folders/175iPIq9fqhIhobvX720Lk2qaIoUrPkKv','_blank')">
+      <div class="name">Client Documentation & Account Setup</div>
+      <div class="dept">01_Client Documentation</div>
+      <a class="drive-link" href="https://drive.google.com/drive/folders/175iPIq9fqhIhobvX720Lk2qaIoUrPkKv" target="_blank">Open in Drive â</a>
+    </div>
+  </div>
+  <div class="flow-arrow">â</div>
+  <div class="flow-col" style="min-width:220px">
+    <div style="font-size:13px;color:#f59e0b;font-weight:700;margin-bottom:8px">â¬ Assign to Service Departments</div>
+    <div class="services-grid" style="width:100%">
+      <div class="stage orange power" onclick="window.open('https://drive.google.com/drive/folders/1dEG9Xg2A0OszrkYSlS4g8g62PvqYdaUQ','_blank')">
+        <div class="name">PPC Services</div><div class="dept">02_FAM, PPC, Accelerator, Launchpad</div>
+        <a class="drive-link" href="https://drive.google.com/drive/folders/1dEG9Xg2A0OszrkYSlS4g8g62PvqYdaUQ" target="_blank">Open in Drive â</a>
+      </div>
+      <div class="stage orange" onclick="window.open('https://drive.google.com/drive/folders/1f8-nsyhyVHkJctzN9eKGjz45563018fU','_blank')">
+        <div class="name">Analytics</div><div class="dept">03_Analytics Department</div>
+        <a class="drive-link" href="https://drive.google.com/drive/folders/1f8-nsyhyVHkJctzN9eKGjz45563018fU" target="_blank">Open in Drive â</a>
+      </div>
+      <div class="stage orange power" onclick="window.open('https://drive.google.com/drive/folders/1QX1En8cr9Dew31FLS5hHRogcYE0gn8jJ','_blank')">
+        <div class="name">Brand Management</div><div class="dept">04_Content & Storefront</div>
+        <a class="drive-link" href="https://drive.google.com/drive/folders/1QX1En8cr9Dew31FLS5hHRogcYE0gn8jJ" target="_blank">Open in Drive â</a>
+      </div>
+      <div class="stage orange" onclick="window.open('https://drive.google.com/drive/folders/15h4ZSJ6Odu7z9hQoN2WteHKbNWMHsKWw','_blank')">
+        <div class="name">Graphic Design</div><div class="dept">05_A+ Content & Imagery</div>
+        <a class="drive-link" href="https://drive.google.com/drive/folders/15h4ZSJ6Odu7z9hQoN2WteHKbNWMHsKWw" target="_blank">Open in Drive â</a>
+      </div>
+      <div class="stage orange" onclick="window.open('https://drive.google.com/drive/folders/1a3ZqKJurOcQTDAsDKgZbYa4cOSyOqzuL','_blank')">
+        <div class="name">DSP</div><div class="dept">06_Demand-Side Platform</div>
+        <a class="drive-link" href="https://drive.google.com/drive/folders/1a3ZqKJurOcQTDAsDKgZbYa4cOSyOqzuL" target="_blank">Open in Drive â</a>
+      </div>
+      <div class="stage orange" onclick="window.open('https://drive.google.com/drive/folders/12twJDCje-hDYPeABFompQdZI59izOsYI','_blank')">
+        <div class="name">Reviews</div><div class="dept">06_Review Management</div>
+        <a class="drive-link" href="https://drive.google.com/drive/folders/12twJDCje-hDYPeABFompQdZI59izOsYI" target="_blank">Open in Drive â</a>
+      </div>
+      <div class="stage orange" onclick="window.open('https://drive.google.com/drive/folders/1GdlQg21b8F8_VSlD1I5OABj2aOzAjaKV','_blank')">
+        <div class="name">TikTok Shop</div><div class="dept">07_TikTok Shop Department</div>
+        <a class="drive-link" href="https://drive.google.com/drive/folders/1GdlQg21b8F8_VSlD1I5OABj2aOzAjaKV" target="_blank">Open in Drive â</a>
+      </div>
+      <div class="stage gray" onclick="window.open('https://drive.google.com/drive/folders/12KpLvJt5q6ANj8YRBrULMxYkuZMyKavc','_blank')">
+        <div class="name">Third Party Services</div><div class="dept">09_External Partners</div>
+        <a class="drive-link" href="https://drive.google.com/drive/folders/12KpLvJt5q6ANj8YRBrULMxYkuZMyKavc" target="_blank">Open in Drive â</a>
+      </div>
+    </div>
+  </div>
+  <div class="flow-arrow">â</div>
+  <div class="flow-col">
+    <div class="stage teal power" onclick="window.open('https://drive.google.com/drive/folders/1c_EII6KmMMjj70QDWEfjUOj2ccEdv0pf','_blank')">
+      <div class="name">Customer Success Management</div>
+      <div class="dept">08_Ongoing Relationship & CSAT</div>
+      <a class="drive-link" href="https://drive.google.com/drive/folders/1c_EII6KmMMjj70QDWEfjUOj2ccEdv0pf" target="_blank">Open in Drive â</a>
+    </div>
+    <div style="margin-top:12px;font-size:12px;color:#f59e0b">â Client Health Check</div>
+    <div class="stage pink" onclick="window.open('https://drive.google.com/drive/folders/1FehKw7CFapxKwWUXI9yiYCWAvNhQ3ULJ','_blank')">
+      <div class="name">Testimonial & Case Study</div>
+      <div class="dept">Healthy â Marketing</div>
+      <a class="drive-link" href="https://drive.google.com/drive/folders/1FehKw7CFapxKwWUXI9yiYCWAvNhQ3ULJ" target="_blank">Open in Drive â</a>
+    </div>
+    <div class="stage" style="background:#e0313120;border-color:#e03131" onclick="window.open('https://drive.google.com/drive/folders/1pG5UOCglSHIp-ONotkuQBiwj9xVoQW8b','_blank')">
+      <div class="name">Intervention / Disputes</div>
+      <div class="dept">At Risk â Client Success</div>
+      <a class="drive-link" href="https://drive.google.com/drive/folders/1pG5UOCglSHIp-ONotkuQBiwj9xVoQW8b" target="_blank" style="color:#ffa8a8">Open in Drive â</a>
+    </div>
+  </div>
+  <div class="flow-arrow">â</div>
+  <div class="flow-col">
+    <div class="stage end-stage"><div class="name">END</div><div class="dept">Value Delivered + Testimonial Collected</div></div>
+  </div>
+</div>
+</div>
+
+<!-- POWER STAGES -->
+<div id="power" class="panel">
+<div class="engine-title" style="color:#e03131">Power Stages â What You Can't Afford to Screw Up</div>
+<div class="engine-sub">These are the critical stages that need documented SOPs. Misfire on any of these and revenue, retention, or reputation suffers.</div>
+
+<div class="power-list">
+  <div class="power-card">
+    <div class="num">GROWTH #1</div>
+    <div class="pname">Paid Ads (Meta / Google)</div>
+    <div class="why">Primary top-of-funnel driver. If ad spend isn't optimized, the entire pipeline starves. Your TRIVIUM ADS and Ads Assets folders hold the creative.</div>
+    <div class="owner">Owner: Marketing Team (Candelaria)</div>
+    <div class="sop-status has-sop">SOP Folder Exists: <a href="https://drive.google.com/drive/folders/1GR-oYDkHIrnSeg8iQPBHs_1c8JRsefPp" target="_blank" style="color:#69db7c">Training/SOPs</a></div>
+  </div>
+  <div class="power-card">
+    <div class="num">GROWTH #2</div>
+    <div class="pname">Lead Magnets & HubSpot Capture</div>
+    <div class="why">Conversion from visitor â lead. If the lead magnet doesn't resonate or HubSpot isn't capturing properly, you lose every dollar spent upstream.</div>
+    <div class="owner">Owner: Marketing Team</div>
+    <div class="sop-status needs-sop">Needs SOP â No documented process found</div>
+  </div>
+  <div class="power-card">
+    <div class="num">GROWTH #3</div>
+    <div class="pname">Presales Audit & Analysis</div>
+    <div class="why">Qualification determines deal quality. Bad qualification = misalignment between what's sold and what's delivered (your ICP Research doc flags this as a churn driver).</div>
+    <div class="owner">Owner: Sales Team</div>
+    <div class="sop-status has-sop">SOP Folder Exists: <a href="https://drive.google.com/drive/folders/1x_leuHmrQq5uGTwMOPa4-FtspLlfDVWS" target="_blank" style="color:#69db7c">Sales SOPs</a></div>
+  </div>
+  <div class="power-card">
+    <div class="num">GROWTH #4</div>
+    <div class="pname">Discovery Call & Proposal</div>
+    <div class="why">Where revenue is won or lost. Mina's Sales Training folder exists but call frameworks need to be consistently documented and QA'd.</div>
+    <div class="owner">Owner: Mina / Sales Closers</div>
+    <div class="sop-status has-sop">Training: <a href="https://drive.google.com/drive/folders/1XJznaNue4dwG7ZCm-ywoBObF-j1R0WAl" target="_blank" style="color:#69db7c">Mina's Sales Training</a></div>
+  </div>
+  <div class="power-card">
+    <div class="num">GROWTH â FULFILLMENT</div>
+    <div class="pname">Handover to Fulfillment</div>
+    <div class="why">THE most critical transition. Your ICP Research doc explicitly names "misalignment between sales and fulfillment" as a top churn reason. This handover must be bulletproof.</div>
+    <div class="owner">Owner: Sales + Client Success</div>
+    <div class="sop-status needs-sop">Needs SOP â Folder exists but no documented checklist found</div>
+  </div>
+  <div class="power-card">
+    <div class="num">FULFILLMENT #1</div>
+    <div class="pname">Client Onboarding</div>
+    <div class="why">First impression sets the tone. "New Client â Initial" sheet exists but the full onboarding sequence needs step-by-step documentation.</div>
+    <div class="owner">Owner: Client Success Team</div>
+    <div class="sop-status needs-sop">Needs SOP â Has spreadsheet but no process checklist</div>
+  </div>
+  <div class="power-card">
+    <div class="num">FULFILLMENT #2</div>
+    <div class="pname">PPC Services Delivery</div>
+    <div class="why">Core revenue driver and largest service department. PPC SOPs folder exists at the top level AND within Fulfillment â there's documented process here.</div>
+    <div class="owner">Owner: PPC Team (Manuel)</div>
+    <div class="sop-status has-sop">SOP Folder Exists: <a href="https://drive.google.com/drive/folders/1W04V67ufiRp1QSgUE_CKNGSJrQLwRjzS" target="_blank" style="color:#69db7c">PPC SOPs</a></div>
+  </div>
+  <div class="power-card">
+    <div class="num">FULFILLMENT #3</div>
+    <div class="pname">Brand Management</div>
+    <div class="why">Key differentiator for client retention. Amazon content quality directly impacts conversion rates. A+ content and storefront management need consistent process.</div>
+    <div class="owner">Owner: Brand Management Team</div>
+    <div class="sop-status needs-sop">Needs SOP â No documented process found in Drive</div>
+  </div>
+  <div class="power-card">
+    <div class="num">FULFILLMENT #4</div>
+    <div class="pname">Customer Success Management</div>
+    <div class="why">Owns retention, CSAT, and expansion revenue. Your Simplesat Feedback sheet tracks this, but the CSM process itself needs documentation. ICP Research flags "reactivity" and "lack of full account audits" as low-CSAT drivers.</div>
+    <div class="owner">Owner: CSM Team</div>
+    <div class="sop-status needs-sop">Needs SOP â Critical gap</div>
+  </div>
+</div>
+
+<div style="margin-top:24px;padding:16px;background:#1e293b;border-radius:10px;border:1px solid #334155">
+  <div style="font-size:14px;font-weight:600;color:#f8fafc;margin-bottom:8px">Summary: SOP Coverage</div>
+  <div style="font-size:13px;color:#94a3b8;line-height:1.6">
+    <strong style="color:#69db7c">4 of 9</strong> power stages have existing SOP documentation in your Drive (Paid Ads, Presales, Sales Training, PPC Delivery).<br>
+    <strong style="color:#ffa8a8">5 of 9</strong> need SOPs created: Lead Capture, Handover, Client Onboarding, Brand Management, and CSM Process.<br>
+    <strong>Priority recommendation:</strong> Start with <strong>Handover to Fulfillment</strong> and <strong>Client Onboarding</strong> â these two stages sit at the junction between your engines and are where the ICP Research doc says churn originates.
+  </div>
+</div>
+</div>
+
+<!-- SUPPORT FUNCTIONS -->
+<div id="support" class="panel">
+<div class="engine-title" style="color:#868e96">Support Functions</div>
+<div class="engine-sub">These departments enable both engines but don't sit in the client value chain directly</div>
+<div class="support-bar">
+  <div class="support-box" onclick="window.open('https://drive.google.com/drive/folders/141B7MQlSYd1VU_LjElDTfYlyq6FJUnfe','_blank')" style="cursor:pointer">
+    <div class="sname">Operations</div>
+    <div class="sdesc">Central hub: QA, IT, KPIs, Legal, Training, Onboarding Plans. 15 subfolders â the connective tissue. <a href="https://drive.google.com/drive/folders/141B7MQlSYd1VU_LjElDTfYlyq6FJUnfe" target="_blank">Open â</a></div>
+  </div>
+  <div class="support-box" onclick="window.open('https://drive.google.com/drive/folders/1qwL-s-EhwzZKv1ENmDZkEAWo4LsFcogS','_blank')" style="cursor:pointer">
+    <div class="sname">Finance</div>
+    <div class="sdesc">AR, AP, Payroll, Reporting, Compliance. 12 subfolders â well-organized numerically. <a href="https://drive.google.com/drive/folders/1qwL-s-EhwzZKv1ENmDZkEAWo4LsFcogS" target="_blank">Open â</a></div>
+  </div>
+  <div class="support-box" onclick="window.open('https://drive.google.com/drive/folders/1SebAdzSZdn7xgAs-zaaSUGXz9APZuAAi','_blank')" style="cursor:pointer">
+    <div class="sname">HR & Recruiting</div>
+    <div class="sdesc">HR, Recruiting, Bonuses, Performance Mgmt, Leave. <a href="https://drive.google.com/drive/folders/1SebAdzSZdn7xgAs-zaaSUGXz9APZuAAi" target="_blank">Open â</a></div>
+  </div>
+  <div class="support-box" onclick="window.open('https://drive.google.com/drive/folders/1HKdMsgQPuP4W_brD3Fgw4E3uaEtTyo2o','_blank')" style="cursor:pointer">
+    <div class="sname">Executive Office</div>
+    <div class="sdesc">Strategic planning. PPC & CSM Roles Coverage plan. <a href="https://drive.google.com/drive/folders/1HKdMsgQPuP4W_brD3Fgw4E3uaEtTyo2o" target="_blank">Open â</a></div>
+  </div>
+  <div class="support-box" onclick="window.open('https://drive.google.com/drive/folders/1qTJmuQVMI7crph9_m6RwIoEu9YwBoP_6','_blank')" style="cursor:pointer">
+    <div class="sname">Recruiting Services</div>
+    <div class="sdesc">Client-facing recruiting service line. 3 organized subfolders. <a href="https://drive.google.com/drive/folders/1qTJmuQVMI7crph9_m6RwIoEu9YwBoP_6" target="_blank">Open â</a></div>
+  </div>
+  <div class="support-box" onclick="window.open('https://drive.google.com/drive/folders/1ri4odWr_LKsK9zU_6RXQlJZxiKqm6h-1','_blank')" style="cursor:pointer">
+    <div class="sname">E2CEO Recruiting</div>
+    <div class="sdesc">E2CEO recruiting service line. Mirrors Recruiting Services structure. <a href="https://drive.google.com/drive/folders/1ri4odWr_LKsK9zU_6RXQlJZxiKqm6h-1" target="_blank">Open â</a></div>
+  </div>
+</div>
+</div>
+
+</div>
+
+<script>
+function show(id){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
+</body>
+</html>
