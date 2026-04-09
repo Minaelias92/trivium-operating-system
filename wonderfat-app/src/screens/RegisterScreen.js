@@ -11,9 +11,10 @@ import {
   Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { COLORS, FONTS, SPACING, RADIUS, SHADOWS } from '../utils/theme';
+import { COLORS, FONTS, SPACING, RADIUS } from '../utils/theme';
 import { saveUserProfile, setOnboardingComplete } from '../services/storage';
 import { useApp } from '../context/AppContext';
+import { registerForPushNotifications } from '../services/notifications';
 
 export default function RegisterScreen({ onComplete }) {
   const { dispatch } = useApp();
@@ -22,13 +23,11 @@ export default function RegisterScreen({ onComplete }) {
     lastName: '',
     email: '',
     phone: '',
-    zipCode: '',
-    amazonOrderId: '',
     dietaryPreferences: [],
     skinType: '',
     notifications: true,
   });
-  const [step, setStep] = useState(1);
+  const [showPreferences, setShowPreferences] = useState(false);
 
   const dietaryOptions = [
     'Keto', 'Paleo', 'Gluten-Free', 'Dairy-Free',
@@ -50,14 +49,20 @@ export default function RegisterScreen({ onComplete }) {
 
   const handleSubmit = async () => {
     if (!form.email) {
-      Alert.alert('Email Required', 'Please enter your email to continue.');
+      Alert.alert('Email Required', 'Please enter your email so we can send you exclusive deals and updates.');
       return;
+    }
+
+    // Register for push notifications
+    let pushToken = null;
+    if (form.notifications) {
+      pushToken = await registerForPushNotifications();
     }
 
     const profile = {
       ...form,
+      pushToken,
       createdAt: new Date().toISOString(),
-      source: form.amazonOrderId ? 'amazon' : 'organic',
     };
 
     await saveUserProfile(profile);
@@ -72,147 +77,6 @@ export default function RegisterScreen({ onComplete }) {
     dispatch({ type: 'SET_ONBOARDING_COMPLETE' });
     onComplete();
   };
-
-  const renderStep1 = () => (
-    <View style={styles.stepContainer}>
-      <Text style={styles.stepTitle}>Create Your Account</Text>
-      <Text style={styles.stepDescription}>
-        Join the WonderFat community for personalized product recommendations and exclusive offers.
-      </Text>
-
-      <View style={styles.inputGroup}>
-        <View style={styles.row}>
-          <View style={[styles.inputWrapper, { flex: 1, marginRight: 8 }]}>
-            <Text style={styles.inputLabel}>First Name</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Jane"
-              placeholderTextColor={COLORS.textMuted}
-              value={form.firstName}
-              onChangeText={v => setForm(prev => ({ ...prev, firstName: v }))}
-            />
-          </View>
-          <View style={[styles.inputWrapper, { flex: 1, marginLeft: 8 }]}>
-            <Text style={styles.inputLabel}>Last Name</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Doe"
-              placeholderTextColor={COLORS.textMuted}
-              value={form.lastName}
-              onChangeText={v => setForm(prev => ({ ...prev, lastName: v }))}
-            />
-          </View>
-        </View>
-
-        <View style={styles.inputWrapper}>
-          <Text style={styles.inputLabel}>Email *</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="jane@example.com"
-            placeholderTextColor={COLORS.textMuted}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            value={form.email}
-            onChangeText={v => setForm(prev => ({ ...prev, email: v }))}
-          />
-        </View>
-
-        <View style={styles.inputWrapper}>
-          <Text style={styles.inputLabel}>Phone (optional)</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="(555) 123-4567"
-            placeholderTextColor={COLORS.textMuted}
-            keyboardType="phone-pad"
-            value={form.phone}
-            onChangeText={v => setForm(prev => ({ ...prev, phone: v }))}
-          />
-        </View>
-
-        <View style={styles.inputWrapper}>
-          <Text style={styles.inputLabel}>Zip Code (optional)</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="90210"
-            placeholderTextColor={COLORS.textMuted}
-            keyboardType="number-pad"
-            maxLength={5}
-            value={form.zipCode}
-            onChangeText={v => setForm(prev => ({ ...prev, zipCode: v }))}
-          />
-        </View>
-      </View>
-    </View>
-  );
-
-  const renderStep2 = () => (
-    <View style={styles.stepContainer}>
-      <Text style={styles.stepTitle}>Personalize Your Experience</Text>
-      <Text style={styles.stepDescription}>
-        Help us recommend products that match your lifestyle.
-      </Text>
-
-      <Text style={styles.sectionLabel}>Dietary Preferences</Text>
-      <View style={styles.chipGrid}>
-        {dietaryOptions.map(option => (
-          <TouchableOpacity
-            key={option}
-            style={[
-              styles.chip,
-              form.dietaryPreferences.includes(option) && styles.chipActive,
-            ]}
-            onPress={() => toggleDietary(option)}
-          >
-            <Text
-              style={[
-                styles.chipText,
-                form.dietaryPreferences.includes(option) && styles.chipTextActive,
-              ]}
-            >
-              {option}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-
-      <Text style={[styles.sectionLabel, { marginTop: SPACING.lg }]}>Skin Type</Text>
-      <View style={styles.chipGrid}>
-        {skinTypes.map(type => (
-          <TouchableOpacity
-            key={type}
-            style={[
-              styles.chip,
-              form.skinType === type && styles.chipActive,
-            ]}
-            onPress={() => setForm(prev => ({ ...prev, skinType: type }))}
-          >
-            <Text
-              style={[
-                styles.chipText,
-                form.skinType === type && styles.chipTextActive,
-              ]}
-            >
-              {type}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-
-      <View style={[styles.inputWrapper, { marginTop: SPACING.lg }]}>
-        <Text style={styles.inputLabel}>Amazon Order ID (optional)</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="e.g. 111-1234567-1234567"
-          placeholderTextColor={COLORS.textMuted}
-          value={form.amazonOrderId}
-          onChangeText={v => setForm(prev => ({ ...prev, amazonOrderId: v }))}
-        />
-        <Text style={styles.inputHint}>
-          Enter your Amazon order ID for exclusive WonderFat member perks!
-        </Text>
-      </View>
-    </View>
-  );
 
   return (
     <KeyboardAvoidingView
@@ -229,35 +93,156 @@ export default function RegisterScreen({ onComplete }) {
           <Text style={styles.subtitle}>Scanner</Text>
         </View>
 
-        <View style={styles.progressBar}>
-          <View style={[styles.progressFill, { width: step === 1 ? '50%' : '100%' }]} />
-        </View>
+        <View style={styles.formContainer}>
+          <Text style={styles.title}>Join the WonderFat Family</Text>
+          <Text style={styles.description}>
+            Get exclusive deals, clean-living tips, and be the first to know about new products.
+          </Text>
 
-        {step === 1 ? renderStep1() : renderStep2()}
+          <View style={styles.inputGroup}>
+            <View style={styles.row}>
+              <View style={[styles.inputWrapper, { flex: 1, marginRight: 8 }]}>
+                <Text style={styles.inputLabel}>First Name</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Jane"
+                  placeholderTextColor={COLORS.textMuted}
+                  value={form.firstName}
+                  onChangeText={v => setForm(prev => ({ ...prev, firstName: v }))}
+                />
+              </View>
+              <View style={[styles.inputWrapper, { flex: 1, marginLeft: 8 }]}>
+                <Text style={styles.inputLabel}>Last Name</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Doe"
+                  placeholderTextColor={COLORS.textMuted}
+                  value={form.lastName}
+                  onChangeText={v => setForm(prev => ({ ...prev, lastName: v }))}
+                />
+              </View>
+            </View>
+
+            <View style={styles.inputWrapper}>
+              <Text style={styles.inputLabel}>Email *</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="jane@example.com"
+                placeholderTextColor={COLORS.textMuted}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                value={form.email}
+                onChangeText={v => setForm(prev => ({ ...prev, email: v }))}
+              />
+            </View>
+
+            <View style={styles.inputWrapper}>
+              <Text style={styles.inputLabel}>Phone</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="(555) 123-4567"
+                placeholderTextColor={COLORS.textMuted}
+                keyboardType="phone-pad"
+                value={form.phone}
+                onChangeText={v => setForm(prev => ({ ...prev, phone: v }))}
+              />
+            </View>
+          </View>
+
+          {/* Notification opt-in */}
+          <TouchableOpacity
+            style={styles.notificationRow}
+            onPress={() => setForm(prev => ({ ...prev, notifications: !prev.notifications }))}
+            activeOpacity={0.7}
+          >
+            <Ionicons
+              name={form.notifications ? 'checkbox' : 'square-outline'}
+              size={24}
+              color={form.notifications ? COLORS.primary : COLORS.gray}
+            />
+            <Text style={styles.notificationText}>
+              Send me deals, promotions, and clean-living tips
+            </Text>
+          </TouchableOpacity>
+
+          {/* Optional preferences toggle */}
+          <TouchableOpacity
+            style={styles.preferencesToggle}
+            onPress={() => setShowPreferences(!showPreferences)}
+          >
+            <Text style={styles.preferencesToggleText}>
+              Personalize my experience (optional)
+            </Text>
+            <Ionicons
+              name={showPreferences ? 'chevron-up' : 'chevron-down'}
+              size={18}
+              color={COLORS.textMuted}
+            />
+          </TouchableOpacity>
+
+          {showPreferences && (
+            <View style={styles.preferencesSection}>
+              <Text style={styles.sectionLabel}>Dietary Preferences</Text>
+              <View style={styles.chipGrid}>
+                {dietaryOptions.map(option => (
+                  <TouchableOpacity
+                    key={option}
+                    style={[
+                      styles.chip,
+                      form.dietaryPreferences.includes(option) && styles.chipActive,
+                    ]}
+                    onPress={() => toggleDietary(option)}
+                  >
+                    <Text
+                      style={[
+                        styles.chipText,
+                        form.dietaryPreferences.includes(option) && styles.chipTextActive,
+                      ]}
+                    >
+                      {option}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              <Text style={[styles.sectionLabel, { marginTop: SPACING.md }]}>Skin Type</Text>
+              <View style={styles.chipGrid}>
+                {skinTypes.map(type => (
+                  <TouchableOpacity
+                    key={type}
+                    style={[
+                      styles.chip,
+                      form.skinType === type && styles.chipActive,
+                    ]}
+                    onPress={() => setForm(prev => ({ ...prev, skinType: type }))}
+                  >
+                    <Text
+                      style={[
+                        styles.chipText,
+                        form.skinType === type && styles.chipTextActive,
+                      ]}
+                    >
+                      {type}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+          )}
+        </View>
       </ScrollView>
 
       <View style={styles.footer}>
-        {step === 2 && (
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => setStep(1)}
-          >
-            <Ionicons name="arrow-back" size={20} color={COLORS.textSecondary} />
-          </TouchableOpacity>
-        )}
-
         <TouchableOpacity style={styles.skipButton} onPress={handleSkip}>
           <Text style={styles.skipText}>Skip for now</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.continueButton}
-          onPress={step === 1 ? () => setStep(2) : handleSubmit}
+          onPress={handleSubmit}
           activeOpacity={0.8}
         >
-          <Text style={styles.continueText}>
-            {step === 1 ? 'Next' : 'Start Scanning'}
-          </Text>
+          <Text style={styles.continueText}>Start Scanning</Text>
           <Ionicons name="arrow-forward" size={18} color={COLORS.white} />
         </TouchableOpacity>
       </View>
@@ -279,7 +264,7 @@ const styles = StyleSheet.create({
   header: {
     alignItems: 'center',
     paddingTop: 60,
-    paddingBottom: SPACING.md,
+    paddingBottom: SPACING.sm,
   },
   logo: {
     fontSize: FONTS.sizes.xxxl,
@@ -295,28 +280,17 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     marginTop: -4,
   },
-  progressBar: {
-    height: 3,
-    backgroundColor: COLORS.lightGray,
-    marginHorizontal: SPACING.lg,
-    borderRadius: 2,
-    marginBottom: SPACING.lg,
-  },
-  progressFill: {
-    height: '100%',
-    backgroundColor: COLORS.primary,
-    borderRadius: 2,
-  },
-  stepContainer: {
+  formContainer: {
     paddingHorizontal: SPACING.lg,
+    paddingTop: SPACING.md,
   },
-  stepTitle: {
+  title: {
     fontSize: FONTS.sizes.xxl,
     fontWeight: '800',
     color: COLORS.textPrimary,
     marginBottom: SPACING.xs,
   },
-  stepDescription: {
+  description: {
     fontSize: FONTS.sizes.md,
     color: COLORS.textSecondary,
     lineHeight: 22,
@@ -347,14 +321,37 @@ const styles = StyleSheet.create({
     fontSize: FONTS.sizes.md,
     color: COLORS.textPrimary,
   },
-  inputHint: {
-    fontSize: FONTS.sizes.xs,
-    color: COLORS.accent,
+  notificationRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: SPACING.lg,
+    gap: SPACING.sm,
+  },
+  notificationText: {
+    flex: 1,
+    fontSize: FONTS.sizes.sm,
+    color: COLORS.textSecondary,
     fontWeight: '500',
-    marginTop: 6,
+  },
+  preferencesToggle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: SPACING.lg,
+    paddingVertical: SPACING.sm,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.border,
+  },
+  preferencesToggleText: {
+    fontSize: FONTS.sizes.sm,
+    color: COLORS.textMuted,
+    fontWeight: '600',
+  },
+  preferencesSection: {
+    marginTop: SPACING.sm,
   },
   sectionLabel: {
-    fontSize: FONTS.sizes.md,
+    fontSize: FONTS.sizes.sm,
     fontWeight: '700',
     color: COLORS.textPrimary,
     marginBottom: SPACING.sm,
@@ -393,10 +390,6 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.background,
     borderTopWidth: 1,
     borderTopColor: COLORS.border,
-  },
-  backButton: {
-    padding: SPACING.sm,
-    marginRight: SPACING.sm,
   },
   skipButton: {
     paddingVertical: SPACING.sm,

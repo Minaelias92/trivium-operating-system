@@ -52,9 +52,10 @@ export default function ProfileScreen({ navigation }) {
           onPress: () => Linking.openURL('https://getwonderfat.com'),
         },
         {
-          icon: 'logo-amazon',
-          label: 'Find Us on Amazon',
-          onPress: () => Linking.openURL('https://www.amazon.com/s?k=wonderfat'),
+          icon: 'repeat-outline',
+          label: 'Subscribe & Save on Amazon',
+          subtitle: 'Save 10% on every auto-delivery',
+          onPress: () => Linking.openURL('https://www.amazon.com/dp/B0F96NJLYC?th=1&subscribe=1'),
         },
         {
           icon: 'gift-outline',
@@ -96,12 +97,6 @@ export default function ProfileScreen({ navigation }) {
         <Text style={styles.userEmail}>
           {user?.email || 'Tap to create your account'}
         </Text>
-        {user?.source === 'amazon' && (
-          <View style={styles.amazonBadge}>
-            <Ionicons name="logo-amazon" size={14} color={COLORS.accent} />
-            <Text style={styles.amazonBadgeText}>Amazon Customer</Text>
-          </View>
-        )}
       </View>
 
       {/* Stats */}
@@ -193,21 +188,6 @@ const styles = StyleSheet.create({
     fontSize: FONTS.sizes.sm,
     color: 'rgba(255,255,255,0.7)',
     marginTop: 2,
-  },
-  amazonBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.15)',
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: RADIUS.full,
-    marginTop: SPACING.sm,
-    gap: 4,
-  },
-  amazonBadgeText: {
-    fontSize: FONTS.sizes.xs,
-    fontWeight: '600',
-    color: COLORS.accentLight,
   },
   // Stats
   statsRow: {

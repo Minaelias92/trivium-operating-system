@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Dimensions,
+  Linking,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, FONTS, SPACING, RADIUS, SHADOWS, getScoreColor } from '../utils/theme';
@@ -160,6 +161,22 @@ export default function HomeScreen({ navigation }) {
           ))}
         </ScrollView>
       </View>
+
+      {/* Subscribe & Save Banner */}
+      <TouchableOpacity
+        style={styles.subscribeBanner}
+        activeOpacity={0.85}
+        onPress={() => Linking.openURL('https://www.amazon.com/dp/B0F96NJLYC?th=1&subscribe=1')}
+      >
+        <View style={styles.subscribeBannerContent}>
+          <Text style={styles.subscribeBannerLabel}>Amazon Subscribe & Save</Text>
+          <Text style={styles.subscribeBannerTitle}>Save 10% Every Order</Text>
+          <Text style={styles.subscribeBannerBody}>Never run out of WonderFat. Auto-delivered to your door.</Text>
+        </View>
+        <View style={styles.subscribeBannerButton}>
+          <Text style={styles.subscribeBannerButtonText}>Set Up</Text>
+        </View>
+      </TouchableOpacity>
 
       {/* WonderFat Promo */}
       <View style={styles.promoCard}>
@@ -378,10 +395,53 @@ const styles = StyleSheet.create({
     color: COLORS.textSecondary,
     lineHeight: 18,
   },
+  // Subscribe & Save
+  subscribeBanner: {
+    margin: SPACING.md,
+    marginTop: SPACING.lg,
+    backgroundColor: '#FF9900',
+    borderRadius: RADIUS.xl,
+    padding: SPACING.lg,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  subscribeBannerContent: {
+    flex: 1,
+  },
+  subscribeBannerLabel: {
+    fontSize: FONTS.sizes.xs,
+    fontWeight: '700',
+    color: 'rgba(0,0,0,0.5)',
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+  },
+  subscribeBannerTitle: {
+    fontSize: FONTS.sizes.lg,
+    fontWeight: '800',
+    color: '#1A1715',
+    marginTop: 2,
+  },
+  subscribeBannerBody: {
+    fontSize: FONTS.sizes.sm,
+    color: 'rgba(0,0,0,0.7)',
+    marginTop: 2,
+  },
+  subscribeBannerButton: {
+    backgroundColor: '#1A1715',
+    paddingHorizontal: SPACING.md,
+    paddingVertical: 10,
+    borderRadius: RADIUS.md,
+    marginLeft: SPACING.sm,
+  },
+  subscribeBannerButtonText: {
+    color: '#FF9900',
+    fontSize: FONTS.sizes.sm,
+    fontWeight: '800',
+  },
   // Promo
   promoCard: {
     margin: SPACING.md,
-    marginTop: SPACING.lg,
+    marginTop: SPACING.md,
     backgroundColor: COLORS.primary,
     borderRadius: RADIUS.xl,
     padding: SPACING.lg,

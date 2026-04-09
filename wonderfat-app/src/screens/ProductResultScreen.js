@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Image,
   Share,
+  Linking,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, FONTS, SPACING, RADIUS, SHADOWS, getScoreColor, getScoreLabel } from '../utils/theme';
@@ -225,6 +226,27 @@ export default function ProductResultScreen({ route, navigation }) {
           </View>
         )}
 
+        {/* Subscribe & Save CTA */}
+        <View style={styles.ctaSection}>
+          <TouchableOpacity
+            style={styles.subscribeCta}
+            activeOpacity={0.85}
+            onPress={() => Linking.openURL('https://www.amazon.com/dp/B0F96NJLYC?th=1&subscribe=1')}
+          >
+            <View style={styles.subscribeCtaIcon}>
+              <Ionicons name="repeat" size={24} color="#FF9900" />
+            </View>
+            <Text style={styles.subscribeCtaTitle}>Subscribe & Save 10%</Text>
+            <Text style={styles.subscribeCtaBody}>
+              Get WonderFat Whipped Tallow Balm auto-delivered to your door and save 10% on every order.
+            </Text>
+            <View style={styles.subscribeCtaButton}>
+              <Text style={styles.subscribeCtaButtonText}>Set Up on Amazon</Text>
+              <Ionicons name="open-outline" size={14} color={COLORS.white} />
+            </View>
+          </TouchableOpacity>
+        </View>
+
         {/* WonderFat CTA */}
         <View style={styles.ctaSection}>
           <View style={styles.ctaCard}>
@@ -232,7 +254,11 @@ export default function ProductResultScreen({ route, navigation }) {
             <Text style={styles.ctaDescription}>
               WonderFat Whipped Tallow Balm is made with just 5 pure, natural ingredients. No synthetics, no fillers, no compromises.
             </Text>
-            <TouchableOpacity style={styles.ctaButton} activeOpacity={0.8}>
+            <TouchableOpacity
+              style={styles.ctaButton}
+              activeOpacity={0.8}
+              onPress={() => Linking.openURL('https://getwonderfat.com')}
+            >
               <Text style={styles.ctaButtonText}>Shop WonderFat</Text>
               <Ionicons name="arrow-forward" size={16} color={COLORS.primary} />
             </TouchableOpacity>
@@ -468,6 +494,51 @@ const styles = StyleSheet.create({
     fontSize: FONTS.sizes.sm,
     color: COLORS.textSecondary,
     lineHeight: 20,
+  },
+  // Subscribe & Save
+  subscribeCta: {
+    backgroundColor: '#FFF8F0',
+    borderWidth: 1.5,
+    borderColor: '#FF9900',
+    borderRadius: RADIUS.lg,
+    padding: SPACING.lg,
+    alignItems: 'center',
+  },
+  subscribeCtaIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: '#FF990015',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: SPACING.sm,
+  },
+  subscribeCtaTitle: {
+    fontSize: FONTS.sizes.lg,
+    fontWeight: '800',
+    color: '#1A1715',
+  },
+  subscribeCtaBody: {
+    fontSize: FONTS.sizes.sm,
+    color: COLORS.textSecondary,
+    textAlign: 'center',
+    lineHeight: 20,
+    marginTop: SPACING.xs,
+    marginBottom: SPACING.md,
+  },
+  subscribeCtaButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FF9900',
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: 12,
+    borderRadius: RADIUS.full,
+    gap: 6,
+  },
+  subscribeCtaButtonText: {
+    fontSize: FONTS.sizes.md,
+    fontWeight: '700',
+    color: COLORS.white,
   },
   // CTA
   ctaSection: {

@@ -14,6 +14,7 @@ import HomeScreen from '../screens/HomeScreen';
 import ScannerScreen from '../screens/ScannerScreen';
 import ProductResultScreen from '../screens/ProductResultScreen';
 import HistoryScreen from '../screens/HistoryScreen';
+import ChatScreen from '../screens/ChatScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 
 const Tab = createBottomTabNavigator();
@@ -35,6 +36,9 @@ function HomeTabs() {
               break;
             case 'History':
               iconName = focused ? 'time' : 'time-outline';
+              break;
+            case 'Chat':
+              iconName = focused ? 'chatbubble-ellipses' : 'chatbubble-ellipses-outline';
               break;
             case 'Profile':
               iconName = focused ? 'person' : 'person-outline';
@@ -61,14 +65,10 @@ function HomeTabs() {
       <Tab.Screen
         name="Scanner"
         component={ScannerScreen}
-        options={{
-          tabBarLabel: 'Scan',
-          tabBarIconStyle: {
-            // Make scan tab icon bigger
-          },
-        }}
+        options={{ tabBarLabel: 'Scan' }}
       />
       <Tab.Screen name="History" component={HistoryScreen} />
+      <Tab.Screen name="Chat" component={ChatScreen} />
       <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>
   );

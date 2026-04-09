@@ -42,6 +42,13 @@
         {
           "cameraPermission": "WonderFat Scanner needs camera access to scan product barcodes."
         }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#1B4332"
+        }
       ]
     ],
     "extra": {
