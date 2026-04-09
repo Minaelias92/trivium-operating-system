@@ -8,18 +8,58 @@ import {
   Dimensions,
   ActivityIndicator,
   Alert,
+  Platform,
 } from 'react-native';
-import { CameraView, useCameraPermissions } from 'expo-camera';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, FONTS, SPACING, RADIUS } from '../utils/theme';
 import { lookupProduct, calculateHealthScore, WONDERFAT_PRODUCTS } from '../services/productDatabase';
 import { addToHistory, incrementDailyScans } from '../services/storage';
 import { useApp } from '../context/AppContext';
 
+let CameraView = null;
+let useCameraPermissions = null;
+if (Platform.OS !== 'web') {
+  try {
+    const cam = require('expo-camera');
+    CameraView = cam.CameraView;
+    useCameraPermissions = cam.useCameraPermissions;
+  } catch (e) {}
+}
+
 const { width } = Dimensions.get('window');
 const SCANNER_SIZE = width * 0.7;
 
+function WebScannerFallback({ navigation }) {
+  return (
+    <View style={styles.permissionContainer}>
+      <View style={styles.permissionContent}>
+        <View style={styles.permissionIcon}>
+          <Ionicons name="scan-outline" size={64} color={COLORS.primary} />
+        </View>
+        <Text style={styles.permissionTitle}>Barcode Scanner</Text>
+        <Text style={styles.permissionDescription}>
+          The barcode scanner uses your camera and works on the mobile app. Download WonderFat Scanner on iOS or Android to scan products!
+        </Text>
+        <TouchableOpacity
+          style={styles.permissionButton}
+          onPress={() => navigation.navigate('Home')}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.permissionButtonText}>Back to Home</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+}
+
 export default function ScannerScreen({ navigation }) {
+  if (Platform.OS === 'web' || !useCameraPermissions) {
+    return <WebScannerFallback navigation={navigation} />;
+  }
+  return <NativeScannerScreen navigation={navigation} />;
+}
+
+function NativeScannerScreen({ navigation }) {
   const [permission, requestPermission] = useCameraPermissions();
   const [isScanning, setIsScanning] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
